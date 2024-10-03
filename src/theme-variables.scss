@@ -1,0 +1,126 @@
+$light-bg: #f0f0f0;
+$light-text: #262626;
+$light-link: #075985;
+$light-button-bg: #075985;
+$light-button-text: #fff;
+
+$dark-bg: #262626;
+$dark-text: #fff;
+$dark-link: #fff;
+$dark-text-hover: #10b981;
+$dark-button-bg: #10b981;
+$dark-button-text: #fff;
+
+[data-bs-theme="light"] {
+  --bs-body-color: #{$light-text};
+  --bs-body-bg: #{$light-bg};
+
+  .btn-secondary {
+    --bs-btn-bg: #{$light-button-bg};
+    --bs-btn-border-color: transparent;
+    --bs-btn-color: #{$light-button-text};
+  }
+
+  a {
+    color: $light-link;
+
+    &.nav-link:hover {
+      color: darken($light-link, 30%);
+    }
+  }
+
+  header {
+    background-color: #{$light-bg};
+  }
+
+  .dropdown-menu {
+    background-color: $light-bg;
+    color: $light-text;
+
+    a {
+      color: $light-link;
+
+      &:hover {
+        color: darken($light-link, 10%);
+      }
+    }
+  }
+
+  input[type="search"]:focus {
+    outline: none;
+    box-shadow: none;
+    border: 1px solid #{$light-button-bg};
+  }
+
+  .form-check-input[type="checkbox"] {
+    border-color: #{$light-button-bg};
+  }
+
+  .form-check-input[type="checkbox"]:focus {
+    box-shadow: none;
+  }
+}
+
+[data-bs-theme="dark"] {
+  --bs-body-color: #{$dark-text};
+  --bs-body-bg: #{$dark-bg};
+
+  .btn-secondary {
+    --bs-btn-bg: #{$dark-button-bg};
+    --bs-btn-border-color: transparent;
+    --bs-btn-color: #{$dark-button-text};
+  }
+
+  .nav-brand {
+    color: $dark-text-hover;
+  }
+
+  a {
+    color: $dark-link;
+
+    &.nav-link:hover {
+      color: $dark-text-hover;
+    }
+  }
+
+  input[type="search"]:focus {
+    outline: none;
+    box-shadow: none;
+    border: 1px solid #{$dark-button-bg};
+  }
+
+  .form-check-input[type="checkbox"] {
+    background-color: #{$dark-button-bg};
+  }
+
+  .form-check-input[type="checkbox"]:checked {
+    border-color: #{$dark-button-bg};
+  }
+
+  .form-check-input[type="checkbox"]:focus {
+    border-color: #{$dark-button-bg};
+    box-shadow: none;
+  }
+
+  .bi-moon,
+  .bi-moon-fill {
+    color: #{$dark-button-bg};
+  }
+
+  .dropdown-menu {
+    background-color: $dark-bg;
+    color: $dark-text;
+
+    a {
+      color: $dark-link;
+
+      &:hover {
+        color: lighten($dark-link, 10%);
+      }
+    }
+  }
+
+  header {
+    background-color: #{$dark-bg};
+  }
+}
