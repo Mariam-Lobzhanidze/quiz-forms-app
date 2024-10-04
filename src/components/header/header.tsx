@@ -1,5 +1,4 @@
-import React from "react";
-
+import "./header.scss";
 interface HeaderProps {
   theme: "light" | "dark";
   onToggleTheme: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -7,39 +6,39 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ theme, onToggleTheme }) => {
   return (
-    <header className="w-100 p-3 mb-3 border-bottom">
+    <header className="w-100 p-3 mb-5 border-bottom">
       <div className="container">
         <div className="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
           <a
             href="/"
-            className="nav-brand fs-5 fw-bold d-flex align-items-center mb-2 px-4 mb-lg-0 text-decoration-none">
+            className="navbar-brand fs-5 fw-bold d-flex align-items-center mb-2 px-4 mb-lg-0 text-decoration-none">
             Forms App
           </a>
+
           <ul className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
             <li>
-              <a href="#" className="nav-link px-3">
-                Templates
-              </a>
-            </li>
-            <li>
-              <a href="#" className="nav-link px-3">
+              <a href="#" className="nav-link px-2 fw-bold">
                 Forms
               </a>
             </li>
             <li>
-              <a href="#" className="nav-link px-3">
-                Favorites
-              </a>
-            </li>
-            <li>
-              <a href="#" className="nav-link px-3">
-                Products
+              <a href="#" className="nav-link px-2 fw-bold">
+                Personal
               </a>
             </li>
           </ul>
           <form className="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-            <input type="search" className="form-control" placeholder="Search..." aria-label="Search" />
+            <input
+              type="search"
+              className="form-control form-control-sm"
+              placeholder="Search..."
+              aria-label="Search"
+            />
           </form>
+
+          <button type="button" className="btn btn-sm me-5 btn-primary">
+            En
+          </button>
           <div className="form-check form-switch me-3">
             <input
               className="form-check-input "
@@ -49,7 +48,11 @@ const Header: React.FC<HeaderProps> = ({ theme, onToggleTheme }) => {
               checked={theme === "dark"}
               onChange={onToggleTheme}
             />
-            {theme === "dark" ? <i className="bi bi-moon-fill"></i> : <i className="bi bi-moon"></i>}
+            {theme === "dark" ? (
+              <i className="bi bi-moon-stars-fill"></i>
+            ) : (
+              <i className="bi bi-moon-stars"></i>
+            )}
           </div>
 
           <div className="dropdown">
@@ -66,7 +69,7 @@ const Header: React.FC<HeaderProps> = ({ theme, onToggleTheme }) => {
                 className="rounded-circle"
               />
             </a>
-            <ul className={`dropdown-menu text-small }`}>
+            <ul className="dropdown-menu text-small">
               <li>
                 <a className="dropdown-item" href="#">
                   Profile

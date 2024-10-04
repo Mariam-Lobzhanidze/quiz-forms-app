@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import "./App.scss";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Header from "./components/header/header";
+import Home from "./components/home/homePage";
+import Footer from "./components/footer/footer";
 
 function App() {
   const getInitialTheme = () => {
@@ -23,6 +25,9 @@ function App() {
     <>
       <div className="container-fluid p-0" data-bs-theme={theme}>
         <Header theme={theme} onToggleTheme={toggleAppTheme} />
+        <Home />
+
+        <Footer />
       </div>
     </>
   );

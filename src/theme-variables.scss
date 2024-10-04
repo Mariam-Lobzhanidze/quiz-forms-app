@@ -1,126 +1,142 @@
-$light-bg: #f0f0f0;
-$light-text: #262626;
-$light-link: #075985;
-$light-button-bg: #075985;
-$light-button-text: #fff;
+$light-bg-color: #f0f0f0;
+$light-color: #075985;
+$light-hover-color: #054060;
+$light-btn-text-color: #fff;
+$light-link-color: #075985;
 
-$dark-bg: #262626;
-$dark-text: #fff;
-$dark-link: #fff;
-$dark-text-hover: #10b981;
-$dark-button-bg: #10b981;
-$dark-button-text: #fff;
+$dark-bg-color: #262626;
+$dark-color: #9a5f6e;
+$dark-hover-color: #574454;
+$dark-btn-text-color: #fff;
+$dark-link-color: #fff;
+
+$transition-duration: 0.3s;
+
+$input-focus-box-shadow: none;
+
+.transition {
+  transition: all $transition-duration ease;
+}
 
 [data-bs-theme="light"] {
-  --bs-body-color: #{$light-text};
-  --bs-body-bg: #{$light-bg};
+  --bs-navbar-color: #{$light-bg-color};
 
-  .btn-secondary {
-    --bs-btn-bg: #{$light-button-bg};
-    --bs-btn-border-color: transparent;
-    --bs-btn-color: #{$light-button-text};
+  .nav {
+    --bs-nav-link-color: #{$light-link-color};
+    --bs-nav-link-hover-color: #{$light-hover-color};
   }
 
-  a {
-    color: $light-link;
-
-    &.nav-link:hover {
-      color: darken($light-link, 30%);
-    }
+  .navbar-brand {
+    --bs-navbar-brand-color: #{$light-color};
+    --bs-navbar-brand-hover-color: #{$light-color};
   }
 
   header {
-    background-color: #{$light-bg};
+    background-color: var(--bs-navbar-color);
+    @extend .transition;
   }
 
-  .dropdown-menu {
-    background-color: $light-bg;
-    color: $light-text;
+  .btn-primary {
+    --bs-btn-bg: #{$light-color};
+    --bs-btn-hover-bg: #{$light-hover-color};
+    --bs-btn-color: #{$light-btn-text-color};
+    --bs-btn-active-bg: #{$light-hover-color};
+    --bs-btn-border-color: none;
+  }
 
-    a {
-      color: $light-link;
+  .bi-moon-stars-fill {
+    color: #{$light-color};
+  }
 
-      &:hover {
-        color: darken($light-link, 10%);
-      }
+  .table thead th {
+    background-color: #{$light-hover-color};
+  }
+
+  .form-control {
+    $input-focus-border-color: #{$light-color};
+
+    box-shadow: $input-focus-box-shadow;
+
+    &:focus {
+      border-color: $input-focus-border-color;
     }
   }
 
-  input[type="search"]:focus {
-    outline: none;
-    box-shadow: none;
-    border: 1px solid #{$light-button-bg};
+  table th {
+    color: #{$light-btn-text-color};
   }
 
-  .form-check-input[type="checkbox"] {
-    border-color: #{$light-button-bg};
-  }
+  footer {
+    background-color: #{$light-color};
 
-  .form-check-input[type="checkbox"]:focus {
-    box-shadow: none;
+    a {
+      color: #{$light-btn-text-color};
+    }
+
+    @extend .transition;
+    .text-center {
+      color: #{$light-btn-text-color};
+    }
   }
 }
 
 [data-bs-theme="dark"] {
-  --bs-body-color: #{$dark-text};
-  --bs-body-bg: #{$dark-bg};
+  --bs-navbar-color: #{$dark-bg-color};
 
-  .btn-secondary {
-    --bs-btn-bg: #{$dark-button-bg};
-    --bs-btn-border-color: transparent;
-    --bs-btn-color: #{$dark-button-text};
+  .nav {
+    --bs-nav-link-color: #{$dark-link-color};
+    --bs-nav-link-hover-color: #{$dark-hover-color};
   }
 
-  .nav-brand {
-    color: $dark-text-hover;
-  }
-
-  a {
-    color: $dark-link;
-
-    &.nav-link:hover {
-      color: $dark-text-hover;
-    }
-  }
-
-  input[type="search"]:focus {
-    outline: none;
-    box-shadow: none;
-    border: 1px solid #{$dark-button-bg};
-  }
-
-  .form-check-input[type="checkbox"] {
-    background-color: #{$dark-button-bg};
-  }
-
-  .form-check-input[type="checkbox"]:checked {
-    border-color: #{$dark-button-bg};
-  }
-
-  .form-check-input[type="checkbox"]:focus {
-    border-color: #{$dark-button-bg};
-    box-shadow: none;
-  }
-
-  .bi-moon,
-  .bi-moon-fill {
-    color: #{$dark-button-bg};
-  }
-
-  .dropdown-menu {
-    background-color: $dark-bg;
-    color: $dark-text;
-
-    a {
-      color: $dark-link;
-
-      &:hover {
-        color: lighten($dark-link, 10%);
-      }
-    }
+  .navbar-brand {
+    --bs-navbar-brand-color: #{$dark-color};
+    --bs-navbar-brand-hover-color: #{$dark-color};
   }
 
   header {
-    background-color: #{$dark-bg};
+    background-color: var(--bs-navbar-color);
+    @extend .transition;
+  }
+
+  .btn-primary {
+    --bs-btn-bg: #{$dark-color};
+    --bs-btn-hover-bg: #{$dark-hover-color};
+    --bs-btn-color: #{$dark-btn-text-color};
+    --bs-btn-active-bg: #{$dark-hover-color};
+    --bs-btn-border-color: none;
+  }
+
+  .bi-moon-stars-fill {
+    color: #{$dark-color};
+  }
+
+  .table thead th {
+    background-color: #{$dark-hover-color};
+  }
+
+  .form-control {
+    $input-focus-border-color: #{$dark-color};
+
+    box-shadow: $input-focus-box-shadow;
+
+    &:focus {
+      border-color: $input-focus-border-color;
+    }
+  }
+
+  .form-check-input {
+    $form-check-input-bg: #{$dark-hover-color};
+    $form-check-input-border: #{$dark-hover-color};
+    background-color: $form-check-input-bg;
+    border-color: $form-check-input-border;
+  }
+
+  footer {
+    background-color: var(--bs-navbar-color);
+
+    @extend .transition;
+    .text-center {
+      color: #{$dark-link-color};
+    }
   }
 }
