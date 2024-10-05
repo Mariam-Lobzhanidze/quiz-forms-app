@@ -7,7 +7,7 @@ const LatestTemplates: React.FC = () => {
   return (
     <section>
       <p className="fs-2 text-center mb-5">Latest templates</p>
-      <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4 ">
+      <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 ">
         {cards.map((_, index) => (
           <div className="col" key={index}>
             <div className="card shadow-sm">

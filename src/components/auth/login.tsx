@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { LoginForm } from "./types";
+import AuthLink from "../shared/authlink";
 
 const Login: React.FC = () => {
   const {
@@ -40,9 +41,10 @@ const Login: React.FC = () => {
               {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
             </div>
 
-            <button type="submit" className="btn btn-primary w-100">
+            <button type="submit" className="btn btn-primary w-100 mb-4">
               Submit
             </button>
+            <AuthLink text="Don't have an account?" linkText="Create one" linkTo="/register" />
           </form>
         </div>
       </div>

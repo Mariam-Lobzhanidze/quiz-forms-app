@@ -1,6 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { RegistrationForm } from "./types";
+import AuthLink from "../shared/authlink";
 
 const Register: React.FC = () => {
   const {
@@ -81,9 +82,11 @@ const Register: React.FC = () => {
               )}
             </div>
 
-            <button type="submit" className="btn btn-primary w-100">
+            <button type="submit" className="btn btn-primary w-100 mb-4">
               Submit
             </button>
+
+            <AuthLink text="Already have an account?" linkText="Login" linkTo="/login" />
           </form>
         </div>
       </div>
