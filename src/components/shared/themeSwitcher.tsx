@@ -1,4 +1,3 @@
-import React from "react";
 import { useTheme } from "../../context/themeContext";
 
 export const ThemeSwitcher: React.FC = () => {
@@ -12,6 +11,7 @@ export const ThemeSwitcher: React.FC = () => {
         id="flexSwitchCheckDefault"
         checked={theme === "dark"}
         onChange={toggleTheme}
+        role="button"
       />
       {theme === "dark" ? <i className="bi bi-moon-stars-fill"></i> : <i className="bi bi-moon-stars"></i>}
     </div>

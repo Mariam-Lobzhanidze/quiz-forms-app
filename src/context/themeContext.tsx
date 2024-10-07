@@ -8,9 +8,8 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const getInitialTheme = (): "light" | "dark" => {
-    const storedTheme = localStorage.getItem("theme");
-    return storedTheme === "dark" ? "dark" : "light";
+  const getInitialTheme = () => {
+    return localStorage.getItem("theme") === "dark" ? "dark" : "light";
   };
 
   const [theme, setTheme] = useState<"light" | "dark">(getInitialTheme);
@@ -19,9 +18,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
-  };
+  const toggleTheme = () => setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
 
   return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;
 };

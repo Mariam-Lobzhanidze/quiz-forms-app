@@ -5,6 +5,7 @@ $light-btn-text-color: #fff;
 $light-link-color: #075985;
 
 $dark-bg-color: #262626;
+
 $dark-color: #9a5f6e;
 $dark-hover-color: #9c5365;
 $dark-btn-text-color: #fff;
@@ -22,7 +23,7 @@ $input-focus-box-shadow: none;
   --bs-navbar-color: #{$light-bg-color};
 
   .offcanvas {
-    --bs-offcanvas-bg: #{$light-color};
+    --bs-offcanvas-color: #{$light-color};
   }
 
   .dropdown-menu {

@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 interface DropdownItem {
   label: string;
   href?: string;
@@ -18,9 +20,9 @@ const Dropdown: React.FC<DropdownProps> = ({ profileImage, items }) => {
       <ul className="dropdown-menu">
         {items.map((item, index) => (
           <li key={index}>
-            <a
+            <Link
               className="dropdown-item"
-              href={item.href || "#"}
+              to={item.href || "#"}
               onClick={(e) => {
                 if (item.onClick) {
                   e.preventDefault();
@@ -28,7 +30,7 @@ const Dropdown: React.FC<DropdownProps> = ({ profileImage, items }) => {
                 }
               }}>
               {item.label}
-            </a>
+            </Link>
           </li>
         ))}
       </ul>
