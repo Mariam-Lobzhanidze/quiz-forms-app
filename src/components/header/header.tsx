@@ -26,12 +26,12 @@ const Header: React.FC = () => {
           <ul className="nav d-none d-lg-flex gap-1 align-items-center">
             <li>
               <Link to="#" className="nav-link px-2">
-                Forms
+                form
               </Link>
             </li>
             <li>
-              <Link to="#" className="nav-link px-2">
-                Personal
+              <Link to="/templateForm" className="nav-link px-2">
+                Template form
               </Link>
             </li>
           </ul>
