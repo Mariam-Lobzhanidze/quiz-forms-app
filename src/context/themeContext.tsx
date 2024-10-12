@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useAuth } from "./authContext";
+import httpClient from "../axios";
 
 type ThemeContextType = {
   theme: "light" | "dark";
@@ -8,17 +10,24 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const getInitialTheme = () => {
-    return localStorage.getItem("theme") === "dark" ? "dark" : "light";
-  };
-
-  const [theme, setTheme] = useState<"light" | "dark">(getInitialTheme);
+  const { activeUser, updateActiveUser } = useAuth();
+  const [theme, setTheme] = useState<"light" | "dark">(activeUser?.theme || "light");
 
   useEffect(() => {
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+    setTheme(activeUser?.theme || "light");
+  }, [activeUser?.theme]);
 
-  const toggleTheme = () => setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+  const toggleTheme = async () => {
+    const updatedTheme = theme === "light" ? "dark" : "light";
+    setTheme(updatedTheme);
+    updateActiveUser({ theme: updatedTheme });
+
+    try {
+      await httpClient.put(`/users/theme/${activeUser?.id}`, { theme: updatedTheme });
+    } catch (error) {
+      console.error("Failed to update user on the backend:", error);
+    }
+  };
 
   return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;
 };

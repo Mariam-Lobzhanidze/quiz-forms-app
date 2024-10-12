@@ -1,4 +1,4 @@
-import { Template } from "../types";
+import { Template } from "../../shared/types";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 
 interface TemplateTitleProps {

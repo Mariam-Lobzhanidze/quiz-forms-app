@@ -46,6 +46,7 @@ const QuestionOptions: React.FC<QuestionOptionsProps> = ({ options, onOptionsCha
             placeholder={`Option ${index + 1}`}
             value={option}
             onChange={(e) => updateOption(index, e.target.value)}
+            required
           />
           <i onClick={() => deleteOption(index)} className="bi bi-x-lg" style={{ cursor: "pointer" }}></i>
         </div>

@@ -1,12 +1,14 @@
 import React, { createContext, ReactNode, useContext, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Question } from "../components/template/types";
+import { validateTypeLimit, validateTypes } from "../validation/typesCountValidation";
 
 type QuestionsContextType = {
   questions: Question[];
   addQuestion: () => void;
   updateQuestion: (id: string, updates: Partial<Question>) => void;
   deleteQuestion: (id: string) => void;
+  validateTypes: (questions: Question[]) => boolean;
 };
 
 const QuestionsContext = createContext<QuestionsContextType | undefined>(undefined);
@@ -24,16 +26,8 @@ export const QuestionsProvider: React.FC<{ children: ReactNode }> = ({ children 
 
   const [questions, setQuestions] = useState<Question[]>([createNewQuestion()]);
 
-  const getQuestionTypeCounts = () => {
-    return questions.reduce((acc, question) => {
-      acc[question.type] = (acc[question.type] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-  };
-
   const addQuestion = () => {
     setQuestions((prevQuestions) => [...prevQuestions, createNewQuestion()]);
-    console.log(getQuestionTypeCounts());
   };
 
   const updateQuestion = (id: string, updates: Partial<Question>) => {
@@ -44,6 +38,16 @@ export const QuestionsProvider: React.FC<{ children: ReactNode }> = ({ children 
         }
 
         const updatedQuestion = { ...question, ...updates };
+
+        if (updates.type && updates.type !== question.type) {
+          const isValidType = validateTypeLimit(questions, updates.type);
+          if (!isValidType) {
+            alert(`You cannot have more than 4 questions of type ${updates.type}.`);
+            return question;
+          }
+        }
+
+        //
 
         if (updates.type && updates.type !== "Checkboxes") {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -61,7 +65,8 @@ export const QuestionsProvider: React.FC<{ children: ReactNode }> = ({ children 
   };
 
   return (
-    <QuestionsContext.Provider value={{ questions, addQuestion, updateQuestion, deleteQuestion }}>
+    <QuestionsContext.Provider
+      value={{ questions, addQuestion, updateQuestion, deleteQuestion, validateTypes }}>
       {children}
     </QuestionsContext.Provider>
   );

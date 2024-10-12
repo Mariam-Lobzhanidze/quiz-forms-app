@@ -11,7 +11,7 @@ const Header: React.FC = () => {
   const { isLoggedIn, handleLogout } = useAuth();
 
   const dropdownItems = [
-    { label: "Profile", href: "/profile" },
+    { label: "AdminPage", href: "/adminPage" },
     { label: "Settings", href: "/settings" },
     { label: "Sign out", onClick: handleLogout },
   ];

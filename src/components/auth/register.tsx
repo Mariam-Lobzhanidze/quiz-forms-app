@@ -1,19 +1,33 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
-import { useForm } from "react-hook-form";
-import { RegistrationForm } from "./types";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { RegistrationForm } from "../shared/types";
 import AuthLink from "../shared/authlink";
+import { emailPattern } from "../../validation/patterns";
+import httpClient from "../../axios";
+import { useNavigate } from "react-router-dom";
+import { useAuthErrors } from "./useAuthErrors";
 
 const Register: React.FC = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-    // setError,
+    setError,
     watch,
   } = useForm<RegistrationForm>();
 
-  const onSubmit = (data: RegistrationForm) => {
-    console.log(data);
+  const navigate = useNavigate();
+  const { handleAuthError } = useAuthErrors(setError);
+
+  const onSubmit: SubmitHandler<RegistrationForm> = async (data) => {
+    try {
+      const { confirmPassword, ...dataForRegister } = data;
+      const response = await httpClient.post("/register", dataForRegister);
+      navigate("/login");
+    } catch (error) {
+      handleAuthError(error);
+    }
   };
 
   const password = watch("password");
@@ -45,7 +59,7 @@ const Register: React.FC = () => {
                 {...register("email", {
                   required: "Email is required",
                   pattern: {
-                    value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
+                    value: emailPattern,
                     message: "Invalid email address",
                   },
                 })}
@@ -60,7 +74,6 @@ const Register: React.FC = () => {
                 type="password"
                 {...register("password", {
                   required: "Password is required",
-                  minLength: { value: 1, message: "Password must be at least 1 characters long" },
                 })}
                 className={`form-control ${errors.password ? "is-invalid" : ""}`}
               />

@@ -1,17 +1,30 @@
-import { useForm } from "react-hook-form";
-import { LoginForm } from "./types";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { LoginForm } from "../shared/types";
 import AuthLink from "../shared/authlink";
+import httpClient from "../../axios";
+import { emailPattern } from "../../validation/patterns";
+import { useAuth } from "../../context/authContext";
+import { useAuthErrors } from "./useAuthErrors";
 
 const Login: React.FC = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-    // setError,
+    setError,
   } = useForm<LoginForm>();
 
-  const onSubmit = (data: LoginForm) => {
-    console.log(data);
+  const { login } = useAuth();
+  const { handleAuthError } = useAuthErrors(setError);
+
+  const onSubmit: SubmitHandler<LoginForm> = async (data: LoginForm) => {
+    try {
+      const response = await httpClient.post("/login", data);
+      const { token, user } = response.data;
+      login(token, user);
+    } catch (error: unknown) {
+      handleAuthError(error);
+    }
   };
 
   return (
@@ -23,12 +36,18 @@ const Login: React.FC = () => {
 
             <div className="form-group mb-3">
               <input
-                placeholder="Username"
-                type="text"
-                {...register("username", { required: "Username is required" })}
-                className={`form-control ${errors.username ? "is-invalid" : ""}`}
+                placeholder="Email"
+                type="email"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: emailPattern,
+                    message: "Invalid email address",
+                  },
+                })}
+                className={`form-control ${errors.email ? "is-invalid" : ""}`}
               />
-              {errors.username && <div className="invalid-feedback">{errors.username.message}</div>}
+              {errors.email && <div className="invalid-feedback">{errors.email.message}</div>}
             </div>
 
             <div className="form-group mb-4">
