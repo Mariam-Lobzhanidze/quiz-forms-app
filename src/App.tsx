@@ -9,7 +9,7 @@ import { ThemeProvider, useTheme } from "./context/themeContext";
 
 function AppContent() {
   const location = useLocation();
-  const hideFooterOnRoutes = ["/templateForm"];
+  const hideFooterOnRoutes = ["/tabs"];
   const { theme } = useTheme();
 
   return (

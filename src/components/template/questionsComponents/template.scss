@@ -1,0 +1,22 @@
+.placeholder-input-container {
+  position: relative;
+  margin-bottom: 50px;
+
+  .placeholder-input {
+    border: none;
+    border-bottom: 1px dotted #999 !important;
+    border-radius: 0;
+    position: relative;
+    width: 60%;
+  }
+
+  &::after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 100%;
+    bottom: -50px;
+    left: 0;
+    border-bottom: 1px dotted #999 !important;
+  }
+}

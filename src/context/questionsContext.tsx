@@ -1,14 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { createContext, ReactNode, useContext, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Question } from "../components/template/types";
-import { validateTypeLimit, validateTypes } from "../validation/typesCountValidation";
+import { validateQuestionTypes, validateTypeLimit } from "../validation/questionTypesCountValidation";
+import { Question } from "../components/shared/types";
 
 type QuestionsContextType = {
   questions: Question[];
   addQuestion: () => void;
   updateQuestion: (id: string, updates: Partial<Question>) => void;
   deleteQuestion: (id: string) => void;
-  validateTypes: (questions: Question[]) => boolean;
+  validateQuestionTypes: (questions: Question[]) => boolean;
 };
 
 const QuestionsContext = createContext<QuestionsContextType | undefined>(undefined);
@@ -50,7 +51,6 @@ export const QuestionsProvider: React.FC<{ children: ReactNode }> = ({ children 
         //
 
         if (updates.type && updates.type !== "Checkboxes") {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { options, ...rest } = updatedQuestion;
           return rest;
         }
@@ -66,7 +66,7 @@ export const QuestionsProvider: React.FC<{ children: ReactNode }> = ({ children 
 
   return (
     <QuestionsContext.Provider
-      value={{ questions, addQuestion, updateQuestion, deleteQuestion, validateTypes }}>
+      value={{ questions, addQuestion, updateQuestion, deleteQuestion, validateQuestionTypes }}>
       {children}
     </QuestionsContext.Provider>
   );

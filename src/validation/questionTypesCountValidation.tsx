@@ -1,6 +1,4 @@
-// validation.ts
-
-import { Question } from "../components/template/types";
+import { Question } from "../components/shared/types";
 
 export const getQuestionTypeCounts = (questions: Question[]) => {
   return questions.reduce((acc, question) => {
@@ -19,7 +17,7 @@ export const validateTypeLimit = (questions: Question[], newType: string, maxLim
   return true;
 };
 
-export const validateTypes = (questions: Question[], maxLimit = 4): boolean => {
+export const validateQuestionTypes = (questions: Question[], maxLimit = 4): boolean => {
   const typeCounts = getQuestionTypeCounts(questions);
 
   for (const [type, count] of Object.entries(typeCounts)) {

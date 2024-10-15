@@ -13,7 +13,7 @@ const LanguageSwitcher = () => {
       <button
         data-bs-toggle="button"
         type="button"
-        className="btn btn-sm  btn-secondary  d-flex gap-2 align-items-center"
+        className="btn btn-sm  btn-primary  d-flex gap-2 align-items-center"
         onClick={toggleLanguage}
         style={{ maxWidth: "50px" }}>
         {language}

@@ -1,13 +1,18 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useForm } from "react-hook-form";
 import { Template } from "../shared/types";
 import { Link } from "react-router-dom";
 import { useQuestions } from "../../context/questionsContext";
 import QuestionOptions from "./questionsComponents/quiestionOptions";
 import TemplateTitle from "./questionsComponents/templateTitle";
+import AnswersPlaceholder from "./questionsComponents/answerPlaceholder";
+import { QuestionType } from "../../enums/questionTypes";
+import { useAuth } from "../../context/authContext";
 
 const TemplateForm: React.FC = () => {
-  const { questions, addQuestion, updateQuestion, deleteQuestion, validateTypes } = useQuestions();
-  const questionTypes = ["Short answer", "Paragraph", "Checkboxes", "Positive integer"];
+  const questionTypes = Object.values(QuestionType);
+  const { activeUser } = useAuth();
+  const { questions, addQuestion, updateQuestion, deleteQuestion, validateQuestionTypes } = useQuestions();
 
   const handleOptionsChange = (questionId: string, newOptions: string[]) => {
     updateQuestion(questionId, { options: newOptions });
@@ -22,19 +27,19 @@ const TemplateForm: React.FC = () => {
   } = useForm<Template>();
 
   const onSubmit = (data: Template) => {
-    const isValid = validateTypes(questions);
+    const isValid = validateQuestionTypes(questions);
 
     if (!isValid) {
       return;
     }
 
-    const currentUser = "user123";
     const submissionDate = new Date().toISOString();
 
     const mergedData = {
       title: data.title,
       description: data.description,
-      user: currentUser,
+      user: activeUser?.username,
+      userId: activeUser?.id,
       date: submissionDate,
       questions: questions,
     };
@@ -43,7 +48,7 @@ const TemplateForm: React.FC = () => {
   };
 
   return (
-    <div className="container position-relative" data-bs-theme={"light"}>
+    <div className="container">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="d-flex flex-column gap-5"
@@ -52,11 +57,8 @@ const TemplateForm: React.FC = () => {
         <TemplateTitle register={register} errors={errors} />
 
         {questions.map((question) => (
-          <div
-            key={question.id}
-            className="container border-start border-secondary border-5 rounded p-3 shadow-sm">
+          <div key={question.id} className="container border-start  border-5 rounded p-3 shadow-sm">
             <div className="d-flex gap-3 mb-4">
-              {/* Title Input */}
               <input
                 type="text"
                 className="form-control form-control-sm w-25 custom-border bg-transparent"
@@ -65,7 +67,6 @@ const TemplateForm: React.FC = () => {
                 onChange={(e) => updateQuestion(question.id, { title: e.target.value })}
               />
 
-              {/* Description Input */}
               <input
                 type="text"
                 className="form-control form-control-sm custom-border bg-transparent"
@@ -79,7 +80,7 @@ const TemplateForm: React.FC = () => {
               <input
                 required
                 type="text"
-                className="form-control"
+                className="form-control bg-transparent"
                 placeholder="Question"
                 value={question.text}
                 onChange={(e) => updateQuestion(question.id, { text: e.target.value })}
@@ -88,7 +89,7 @@ const TemplateForm: React.FC = () => {
               <div className="dropdown">
                 <button
                   id="dropdownMenuButton"
-                  className="btn btn-secondary dropdown-toggle"
+                  className="btn btn-primary dropdown-toggle"
                   type="button"
                   data-bs-toggle="dropdown">
                   {question.type}
@@ -115,9 +116,11 @@ const TemplateForm: React.FC = () => {
               />
             )}
 
-            {question.type === "Short answer" && <p>short</p>}
-            {question.type === "Paragraph" && <p>paragraph</p>}
-            {question.type === "Positive integer" && <p>positive integer</p>}
+            {question.type === "Short answer" && <AnswersPlaceholder placeholderText="Short answer text" />}
+            {question.type === "Paragraph" && <AnswersPlaceholder placeholderText="Long answer text" />}
+            {question.type === "Positive integer" && (
+              <AnswersPlaceholder placeholderText="Positive integer answer" />
+            )}
 
             <div className="d-flex align-items-center gap-3 mt-4">
               <div className="d-flex align-items-center gap-3 mt-4 w-100 justify-content-between">
@@ -167,7 +170,7 @@ const TemplateForm: React.FC = () => {
         </button>
       </form>
 
-      <div className="w-100 bg-body shadow-lg p-3 position-fixed bottom-0 rounded-top">
+      <div style={{ position: "fixed", bottom: "10%", left: "100px" }}>
         <i data-bs-placement="top" role="button" className="bi bi-plus-circle fs-3" onClick={addQuestion}></i>{" "}
       </div>
     </div>
