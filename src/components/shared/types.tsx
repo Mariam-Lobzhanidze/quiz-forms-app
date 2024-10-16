@@ -20,7 +20,13 @@ export interface Question {
   type: string;
   state: QuestionState;
   text: string;
-  options?: string[];
+  options?: Option[];
+  error?: string;
+}
+
+export interface Option {
+  text: string;
+  error?: string;
 }
 
 export interface Template {
@@ -30,7 +36,6 @@ export interface Template {
   /*
 
   imageUrl: string;
-  userId: number;
   topicId: number;
    */
   questions: Question[];

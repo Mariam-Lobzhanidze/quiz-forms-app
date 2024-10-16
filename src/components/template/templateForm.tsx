@@ -3,18 +3,20 @@ import { useForm } from "react-hook-form";
 import { Template } from "../shared/types";
 import { Link } from "react-router-dom";
 import { useQuestions } from "../../context/questionsContext";
-import QuestionOptions from "./questionsComponents/quiestionOptions";
+import QuestionOptions from "./questionsComponents/questionOptions";
 import TemplateTitle from "./questionsComponents/templateTitle";
 import AnswersPlaceholder from "./questionsComponents/answerPlaceholder";
 import { QuestionType } from "../../enums/questionTypes";
 import { useAuth } from "../../context/authContext";
+import { Option } from "../shared/types";
+import { v4 as uuidv4 } from "uuid";
 
 const TemplateForm: React.FC = () => {
   const questionTypes = Object.values(QuestionType);
   const { activeUser } = useAuth();
-  const { questions, addQuestion, updateQuestion, deleteQuestion, validateQuestionTypes } = useQuestions();
+  const { questions, addQuestion, updateQuestion, deleteQuestion, validateQuestions } = useQuestions();
 
-  const handleOptionsChange = (questionId: string, newOptions: string[]) => {
+  const handleOptionsChange = (questionId: string, newOptions: Option[]) => {
     updateQuestion(questionId, { options: newOptions });
   };
 
@@ -22,38 +24,30 @@ const TemplateForm: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
-
-    // watch,
   } = useForm<Template>();
 
   const onSubmit = (data: Template) => {
-    const isValid = validateQuestionTypes(questions);
-
+    const isValid = validateQuestions();
     if (!isValid) {
       return;
     }
 
-    const submissionDate = new Date().toISOString();
-
-    const mergedData = {
+    const templateData = {
+      id: uuidv4(),
       title: data.title,
       description: data.description,
-      user: activeUser?.username,
       userId: activeUser?.id,
-      date: submissionDate,
+      date: new Date(),
       questions: questions,
     };
 
-    console.log(mergedData);
+    console.log(templateData);
   };
 
   return (
     <div className="container">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="d-flex flex-column gap-5"
-        style={{ marginBottom: "150px" }}>
-        <h2 className="text-center mb-1">Template</h2>
+      <form onSubmit={handleSubmit(onSubmit)} className="d-flex flex-column gap-5 mb-5">
+        {/* <h2 className="text-center mb-1">Template</h2> */}
         <TemplateTitle register={register} errors={errors} />
 
         {questions.map((question) => (
@@ -66,6 +60,7 @@ const TemplateForm: React.FC = () => {
                 value={question.title}
                 onChange={(e) => updateQuestion(question.id, { title: e.target.value })}
               />
+              <div className="invalid-feedback">Please choose a username.</div>
 
               <input
                 type="text"
@@ -76,9 +71,9 @@ const TemplateForm: React.FC = () => {
               />
             </div>
 
-            <div className="d-flex gap-3 align-items-center flex-column flex-lg-row">
+            <div className="d-flex gap-3 align-items-center flex-column flex-lg-row mb-5">
+              <div className="input-group mb-3"></div>
               <input
-                required
                 type="text"
                 className="form-control bg-transparent"
                 placeholder="Question"
@@ -107,6 +102,7 @@ const TemplateForm: React.FC = () => {
                   ))}
                 </ul>
               </div>
+              {question.error && <span className="text-danger">{question.error}</span>}
             </div>
 
             {question.type === "Checkboxes" && (

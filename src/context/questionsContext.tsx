@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+
 import React, { createContext, ReactNode, useContext, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { validateQuestionTypes, validateTypeLimit } from "../validation/questionTypesCountValidation";
+import { validateInput, validateQuestionTypes, validateTypeLimit } from "../validation/questionValidation";
 import { Question } from "../components/shared/types";
 
 type QuestionsContextType = {
@@ -9,7 +10,7 @@ type QuestionsContextType = {
   addQuestion: () => void;
   updateQuestion: (id: string, updates: Partial<Question>) => void;
   deleteQuestion: (id: string) => void;
-  validateQuestionTypes: (questions: Question[]) => boolean;
+  validateQuestions: () => boolean;
 };
 
 const QuestionsContext = createContext<QuestionsContextType | undefined>(undefined);
@@ -22,7 +23,7 @@ export const QuestionsProvider: React.FC<{ children: ReactNode }> = ({ children 
     type: "Checkboxes",
     state: "PRESENT_REQUIRED",
     text: "",
-    options: [""],
+    options: [],
   });
 
   const [questions, setQuestions] = useState<Question[]>([createNewQuestion()]);
@@ -40,6 +41,10 @@ export const QuestionsProvider: React.FC<{ children: ReactNode }> = ({ children 
 
         const updatedQuestion = { ...question, ...updates };
 
+        if (updates.text !== undefined && updates.text.trim() !== "") {
+          updatedQuestion.error = undefined;
+        }
+
         if (updates.type && updates.type !== question.type) {
           const isValidType = validateTypeLimit(questions, updates.type);
           if (!isValidType) {
@@ -47,8 +52,6 @@ export const QuestionsProvider: React.FC<{ children: ReactNode }> = ({ children 
             return question;
           }
         }
-
-        //
 
         if (updates.type && updates.type !== "Checkboxes") {
           const { options, ...rest } = updatedQuestion;
@@ -64,9 +67,14 @@ export const QuestionsProvider: React.FC<{ children: ReactNode }> = ({ children 
     setQuestions((prevQuestions) => prevQuestions.filter((question) => question.id !== id));
   };
 
+  const validateQuestions = (): boolean => {
+    const isValid = validateInput(questions);
+    return isValid && validateQuestionTypes(questions);
+  };
+
   return (
     <QuestionsContext.Provider
-      value={{ questions, addQuestion, updateQuestion, deleteQuestion, validateQuestionTypes }}>
+      value={{ questions, addQuestion, updateQuestion, deleteQuestion, validateQuestions }}>
       {children}
     </QuestionsContext.Provider>
   );

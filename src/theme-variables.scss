@@ -107,9 +107,13 @@
   --bs-link-color: #fff;
   --bs-secondary-rgb: #212529;
   --bs-link-hover-color: #3ba27e;
-  --text-color: #fff;
+  --text-color-light: #fff;
 
   --tabs-link-color: #333;
+
+  .form-control[type="search"] {
+    color: var(--text-color-light);
+  }
 
   .nav-tabs .nav-link:not(.active) {
     color: var(--tabs-link-color);

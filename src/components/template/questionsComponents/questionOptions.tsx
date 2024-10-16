@@ -1,17 +1,16 @@
 import React, { useRef } from "react";
 
 interface QuestionOptionsProps {
-  options: string[];
-  onOptionsChange: (newOptions: string[]) => void;
+  options: { text: string; error?: string }[];
+  onOptionsChange: (newOptions: { text: string; error?: string }[]) => void;
 }
 
 const QuestionOptions: React.FC<QuestionOptionsProps> = ({ options, onOptionsChange }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const addNewOption = () => {
-    const newOptions = [...options, ""];
+    const newOptions = [...options, { text: "", error: undefined }];
     onOptionsChange(newOptions);
-
     handleInputFocus();
   };
 
@@ -25,7 +24,12 @@ const QuestionOptions: React.FC<QuestionOptionsProps> = ({ options, onOptionsCha
 
   const updateOption = (index: number, value: string) => {
     const updatedOptions = [...options];
-    updatedOptions[index] = value;
+    updatedOptions[index].text = value;
+
+    if (value.trim() !== "") {
+      updatedOptions[index].error = undefined;
+    }
+
     onOptionsChange(updatedOptions);
   };
 
@@ -44,10 +48,10 @@ const QuestionOptions: React.FC<QuestionOptionsProps> = ({ options, onOptionsCha
             className="form-control custom-border bg-transparent"
             type="text"
             placeholder={`Option ${index + 1}`}
-            value={option}
+            value={option.text}
             onChange={(e) => updateOption(index, e.target.value)}
-            required
           />
+          {option.error && <span className="text-danger">{option.error}</span>}
           <i onClick={() => deleteOption(index)} className="bi bi-x-lg" style={{ cursor: "pointer" }}></i>
         </div>
       ))}
