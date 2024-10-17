@@ -1,165 +1,167 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useForm } from "react-hook-form";
-import { Template } from "../shared/types";
+import { useFieldArray, useForm } from "react-hook-form";
+import { Question, Template } from "../shared/types";
 import { Link } from "react-router-dom";
-import { useQuestions } from "../../context/questionsContext";
 import QuestionOptions from "./questionsComponents/questionOptions";
 import TemplateTitle from "./questionsComponents/templateTitle";
 import AnswersPlaceholder from "./questionsComponents/answerPlaceholder";
 import { QuestionType } from "../../enums/questionTypes";
 import { useAuth } from "../../context/authContext";
-import { Option } from "../shared/types";
 import { v4 as uuidv4 } from "uuid";
+import React from "react";
 
 const TemplateForm: React.FC = () => {
   const questionTypes = Object.values(QuestionType);
   const { activeUser } = useAuth();
-  const { questions, addQuestion, updateQuestion, deleteQuestion, validateQuestions } = useQuestions();
-
-  const handleOptionsChange = (questionId: string, newOptions: Option[]) => {
-    updateQuestion(questionId, { options: newOptions });
-  };
 
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
+    getValues,
   } = useForm<Template>();
 
-  const onSubmit = (data: Template) => {
-    const isValid = validateQuestions();
-    if (!isValid) {
-      return;
-    }
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "questions",
+  });
 
+  const onSubmit = (data: Template) => {
     const templateData = {
       id: uuidv4(),
       title: data.title,
       description: data.description,
       userId: activeUser?.id,
       date: new Date(),
-      questions: questions,
+      questions: data.questions,
     };
 
     console.log(templateData);
   };
 
+  const updateQuestion = (index: number, updates: Partial<Question>) => {
+    const currentQuestion = getValues(`questions.${index}`);
+
+    if (updates.type && updates.type !== "Checkboxes") {
+      delete currentQuestion.options;
+    }
+
+    setValue(`questions.${index}`, {
+      ...currentQuestion,
+      ...updates,
+    });
+  };
+
   return (
     <div className="container">
       <form onSubmit={handleSubmit(onSubmit)} className="d-flex flex-column gap-5 mb-5">
-        {/* <h2 className="text-center mb-1">Template</h2> */}
         <TemplateTitle register={register} errors={errors} />
 
-        {questions.map((question) => (
-          <div key={question.id} className="container border-start  border-5 rounded p-3 shadow-sm">
-            <div className="d-flex gap-3 mb-4">
-              <input
-                type="text"
-                className="form-control form-control-sm w-25 custom-border bg-transparent"
-                placeholder="Question title"
-                value={question.title}
-                onChange={(e) => updateQuestion(question.id, { title: e.target.value })}
-              />
-              <div className="invalid-feedback">Please choose a username.</div>
+        {fields.map((question, index) => {
+          const questionType = getValues(`questions.${index}.type`);
 
-              <input
-                type="text"
-                className="form-control form-control-sm custom-border bg-transparent"
-                placeholder="Question description"
-                value={question.description}
-                onChange={(e) => updateQuestion(question.id, { description: e.target.value })}
-              />
-            </div>
+          const options = [
+            { value: "PRESENT_REQUIRED", label: "Required", id: `required-${question.id}` },
+            { value: "PRESENT_OPTIONAL", label: "Optional", id: `optional-${question.id}` },
+          ];
 
-            <div className="d-flex gap-3 align-items-center flex-column flex-lg-row mb-5">
-              <div className="input-group mb-3"></div>
-              <input
-                type="text"
-                className="form-control bg-transparent"
-                placeholder="Question"
-                value={question.text}
-                onChange={(e) => updateQuestion(question.id, { text: e.target.value })}
-              />
-
-              <div className="dropdown">
-                <button
-                  id="dropdownMenuButton"
-                  className="btn btn-primary dropdown-toggle"
-                  type="button"
-                  data-bs-toggle="dropdown">
-                  {question.type}
-                </button>
-                <ul className="dropdown-menu">
-                  {questionTypes.map((option) => (
-                    <li key={option}>
-                      <Link
-                        className={`dropdown-item ${question.type === option ? "active" : ""}`}
-                        to="#"
-                        onClick={() => updateQuestion(question.id, { type: option })}>
-                        {option}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+          return (
+            <div key={question.id} className="container border-start border-5 rounded p-3 shadow-sm">
+              <div className="d-flex gap-3 mb-4">
+                <input
+                  type="text"
+                  className="form-control form-control-sm w-25 custom-border bg-transparent"
+                  placeholder="Question title"
+                  {...register(`questions.${index}.title`)}
+                />
+                <input
+                  type="text"
+                  className="form-control form-control-sm custom-border bg-transparent"
+                  placeholder="Question description"
+                  {...register(`questions.${index}.description`)}
+                />
               </div>
-              {question.error && <span className="text-danger">{question.error}</span>}
-            </div>
 
-            {question.type === "Checkboxes" && (
-              <QuestionOptions
-                options={question.options || []}
-                onOptionsChange={(newOptions) => handleOptionsChange(question.id, newOptions)}
-              />
-            )}
-
-            {question.type === "Short answer" && <AnswersPlaceholder placeholderText="Short answer text" />}
-            {question.type === "Paragraph" && <AnswersPlaceholder placeholderText="Long answer text" />}
-            {question.type === "Positive integer" && (
-              <AnswersPlaceholder placeholderText="Positive integer answer" />
-            )}
-
-            <div className="d-flex align-items-center gap-3 mt-4">
-              <div className="d-flex align-items-center gap-3 mt-4 w-100 justify-content-between">
-                <div className="d-flex gap-3 align-items-center">
-                  <div className="form-check">
-                    <input
-                      role="button"
-                      className="form-check-input"
-                      type="radio"
-                      name={`questionState-${question.id}`}
-                      id={`required-${question.id}`}
-                      value="PRESENT_REQUIRED"
-                      checked={question.state === "PRESENT_REQUIRED"}
-                      onChange={() => updateQuestion(question.id, { state: "PRESENT_REQUIRED" })}
-                    />
-                    <label className="form-check-label" htmlFor={`required-${question.id}`}>
-                      Required
-                    </label>
-                  </div>
-                  <div className="form-check">
-                    <input
-                      role="button"
-                      className="form-check-input"
-                      type="radio"
-                      name={`questionState-${question.id}`}
-                      id={`optional-${question.id}`}
-                      value="PRESENT_OPTIONAL"
-                      checked={question.state === "PRESENT_OPTIONAL"}
-                      onChange={() => updateQuestion(question.id, { state: "PRESENT_OPTIONAL" })}
-                    />
-                    <label className="form-check-label" htmlFor={`optional-${question.id}`}>
-                      Optional
-                    </label>
-                  </div>
+              <div className="d-flex gap-3 align-items-center flex-column flex-lg-row mb-5">
+                <div className="position-relative w-100">
+                  <input
+                    {...register(`questions.${index}.text`, { required: "Question text is required" })}
+                    placeholder="Question text"
+                    className={`form-control bg-transparent ${
+                      errors.questions?.[index]?.text ? "is-invalid" : ""
+                    }`}
+                  />
+                  {errors.questions?.[index]?.text && (
+                    <div className="invalid-feedback position-absolute" style={{ bottom: "-1.5rem" }}>
+                      {errors.questions[index].text.message}
+                    </div>
+                  )}
                 </div>
-                <i
-                  role="button"
-                  className="bi bi-trash3 fs-4"
-                  onClick={() => deleteQuestion(question.id)}></i>
+
+                <div className="dropdown">
+                  <button
+                    id="dropdownMenuButton"
+                    className="btn btn-primary dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown">
+                    {questionType || "Select type"}
+                  </button>
+                  <ul className="dropdown-menu">
+                    {questionTypes.map((option) => (
+                      <li key={option}>
+                        <Link
+                          className={`dropdown-item ${questionType === option ? "active" : ""}`}
+                          to="#"
+                          onClick={() => {
+                            updateQuestion(index, { type: option });
+                          }}>
+                          {option}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {questionType === "Checkboxes" && (
+                <QuestionOptions
+                  register={register}
+                  questionIndex={index}
+                  errors={errors}
+                  control={control}
+                />
+              )}
+
+              {questionType !== "Checkboxes" && (
+                <AnswersPlaceholder placeholderText={`${questionType} answer`} />
+              )}
+
+              <div className="d-flex align-items-center gap-3 mt-4">
+                <div className="d-flex align-items-center gap-3 mt-4 w-100 justify-content-between">
+                  <div className="d-flex gap-3 align-items-center">
+                    {options.map((option) => (
+                      <div className="form-check" key={option.id}>
+                        <input
+                          {...register(`questions.${index}.state`)}
+                          className="form-check-input"
+                          type="radio"
+                          name={`questions.${index}.state`}
+                          id={option.id}
+                          value={option.value}
+                        />
+                        <label className="form-check-label" htmlFor={option.id}>
+                          {option.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                  <i className="bi bi-trash3 fs-4" onClick={() => remove(index)}></i>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         <button type="submit" className="btn btn-primary mt-4 align-self-end">
           Save
@@ -167,7 +169,20 @@ const TemplateForm: React.FC = () => {
       </form>
 
       <div style={{ position: "fixed", bottom: "10%", left: "100px" }}>
-        <i data-bs-placement="top" role="button" className="bi bi-plus-circle fs-3" onClick={addQuestion}></i>{" "}
+        <i
+          title="Add question"
+          className="bi bi-plus-circle fs-3"
+          onClick={() =>
+            append({
+              title: "",
+              description: "",
+              id: uuidv4(),
+              type: "Checkboxes",
+              state: "PRESENT_REQUIRED",
+              text: "",
+              options: [],
+            })
+          }></i>{" "}
       </div>
     </div>
   );

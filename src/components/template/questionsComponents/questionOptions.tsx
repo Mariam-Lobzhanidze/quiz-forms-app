@@ -1,61 +1,61 @@
-import React, { useRef } from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Control, FieldErrors, UseFormRegister, useFieldArray } from "react-hook-form";
+import { Template } from "../../shared/types";
+import { v4 as uuidv4 } from "uuid";
+import { useEffect } from "react";
 
 interface QuestionOptionsProps {
-  options: { text: string; error?: string }[];
-  onOptionsChange: (newOptions: { text: string; error?: string }[]) => void;
+  register: UseFormRegister<Template>;
+  errors: FieldErrors<Template>;
+  questionIndex: number;
+  control: Control<Template>;
 }
 
-const QuestionOptions: React.FC<QuestionOptionsProps> = ({ options, onOptionsChange }) => {
-  const inputRef = useRef<HTMLInputElement | null>(null);
+const QuestionOptions: React.FC<QuestionOptionsProps> = ({ register, errors, questionIndex, control }) => {
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: `questions.${questionIndex}.options`,
+  });
 
   const addNewOption = () => {
-    const newOptions = [...options, { text: "", error: undefined }];
-    onOptionsChange(newOptions);
-    handleInputFocus();
+    append({ id: uuidv4(), value: "" });
   };
 
-  const handleInputFocus = () => {
-    setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, 0);
-  };
-
-  const updateOption = (index: number, value: string) => {
-    const updatedOptions = [...options];
-    updatedOptions[index].text = value;
-
-    if (value.trim() !== "") {
-      updatedOptions[index].error = undefined;
+  const loadDefaultOption = () => {
+    console.log("called");
+    if (fields.length === 0) {
+      append({ id: uuidv4(), value: "" });
     }
-
-    onOptionsChange(updatedOptions);
   };
 
-  const deleteOption = (index: number) => {
-    const updatedOptions = options.filter((_, i) => i !== index);
-    onOptionsChange(updatedOptions);
-  };
+  useEffect(() => {
+    loadDefaultOption();
+  }, []);
 
   return (
-    <div className="mt-3">
-      {options.map((option, index) => (
-        <div className="input-group mb-3 d-flex gap-3 align-items-center" key={index}>
-          <i className="bi bi-app fs-5" style={{ color: "#9ca3af" }}></i>
-          <input
-            ref={index === options.length - 1 ? inputRef : null}
-            className="form-control custom-border bg-transparent"
-            type="text"
-            placeholder={`Option ${index + 1}`}
-            value={option.text}
-            onChange={(e) => updateOption(index, e.target.value)}
-          />
-          {option.error && <span className="text-danger">{option.error}</span>}
-          <i onClick={() => deleteOption(index)} className="bi bi-x-lg" style={{ cursor: "pointer" }}></i>
+    <div className="mt-2 d-flex flex-column gap-3">
+      {fields.map((field, index) => (
+        <div className="input-group d-flex flex-column gap-1" key={field.id}>
+          <div className="d-flex gap-3 align-items-center">
+            <input
+              type="text"
+              className={`form-control bg-transparent ${
+                errors.questions?.[questionIndex]?.options?.[index] ? "is-invalid" : ""
+              }`}
+              placeholder="Option"
+              {...register(`questions.${questionIndex}.options.${index}.value`, {
+                required: "Option is required",
+              })}
+            />
+            <i className="bi bi-x-lg" onClick={() => remove(index)}></i>
+          </div>
+          {errors.questions?.[questionIndex]?.options?.[index] && (
+            <div className="invalid-feedback" style={{ display: "block", marginTop: "0.15rem" }}>
+              {errors.questions[questionIndex].options[index]?.message}
+            </div>
+          )}
         </div>
       ))}
-
       <div className="input-group mb-3 w-50">
         <input
           type="text"

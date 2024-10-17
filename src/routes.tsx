@@ -1,6 +1,5 @@
 import React, { Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { QuestionsProvider } from "./context/questionsContext";
 import ProtectedRoute from "./protectedRoutes";
 
 const Home = React.lazy(() => import("./components/home/homePage"));
@@ -34,11 +33,7 @@ const AppRoutes: React.FC = () => {
           <Route
             key={route.path}
             path={route.path}
-            element={
-              <ProtectedRoute>
-                {route.provider ? <QuestionsProvider>{route.element}</QuestionsProvider> : route.element}
-              </ProtectedRoute>
-            }
+            element={<ProtectedRoute>{route.element}</ProtectedRoute>}
           />
         ))}
 

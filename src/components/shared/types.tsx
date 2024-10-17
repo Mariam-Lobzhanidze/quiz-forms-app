@@ -12,7 +12,10 @@ export interface LoginForm {
 }
 
 export type QuestionState = "PRESENT_REQUIRED" | "PRESENT_OPTIONAL";
-
+export interface Option {
+  id: string;
+  value: string;
+}
 export interface Question {
   title: string;
   description: string;
@@ -21,12 +24,6 @@ export interface Question {
   state: QuestionState;
   text: string;
   options?: Option[];
-  error?: string;
-}
-
-export interface Option {
-  text: string;
-  error?: string;
 }
 
 export interface Template {
