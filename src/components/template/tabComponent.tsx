@@ -1,18 +1,32 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
+import httpClient from "../../axios";
 const TemplateForm = React.lazy(() => import("./templateForm"));
 
 const TabNavigation: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("questions");
+  const [activeTab, setActiveTab] = useState("template");
+
+  const getAllTemplates = async () => {
+    try {
+      const response = await httpClient.get("/templates");
+      console.log(response.data);
+    } catch (error: unknown) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getAllTemplates();
+  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
-      case "questions":
+      case "template":
         return <TemplateForm />;
       case "responses":
         return (
           <div>
-            <h5>Editable Questions</h5>
+            <h5>Editable </h5>
           </div>
         );
       case "results":
@@ -38,9 +52,9 @@ const TabNavigation: React.FC = () => {
       <ul className="nav nav-tabs d-flex justify-content-center mb-5">
         <li className="nav-item ">
           <a
-            className={`nav-link ${activeTab === "questions" ? "active" : ""}`}
-            onClick={() => setActiveTab("questions")}>
-            Questions
+            className={`nav-link ${activeTab === "template" ? "active" : ""}`}
+            onClick={() => setActiveTab("template")}>
+            template
           </a>
         </li>
         <li className="nav-item">

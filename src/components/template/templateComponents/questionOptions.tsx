@@ -22,7 +22,6 @@ const QuestionOptions: React.FC<QuestionOptionsProps> = ({ register, errors, que
   };
 
   const loadDefaultOption = () => {
-    console.log("called");
     if (fields.length === 0) {
       append({ id: uuidv4(), value: "" });
     }
@@ -51,7 +50,7 @@ const QuestionOptions: React.FC<QuestionOptionsProps> = ({ register, errors, que
           </div>
           {errors.questions?.[questionIndex]?.options?.[index] && (
             <div className="invalid-feedback" style={{ display: "block", marginTop: "0.15rem" }}>
-              {errors.questions[questionIndex].options[index]?.message}
+              {errors.questions[questionIndex].options[index]?.value?.message}
             </div>
           )}
         </div>

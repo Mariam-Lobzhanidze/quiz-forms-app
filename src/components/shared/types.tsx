@@ -30,11 +30,6 @@ export interface Template {
   title: string;
   description: string;
   userId?: number;
-  /*
-
-  imageUrl: string;
-  topicId: number;
-   */
   questions: Question[];
 }
 

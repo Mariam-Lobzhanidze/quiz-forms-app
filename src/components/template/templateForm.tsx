@@ -1,16 +1,18 @@
 import { useFieldArray, useForm } from "react-hook-form";
 import { Question, Template } from "../shared/types";
 import { Link } from "react-router-dom";
-import QuestionOptions from "./questionsComponents/questionOptions";
-import TemplateTitle from "./questionsComponents/templateTitle";
-import AnswersPlaceholder from "./questionsComponents/answerPlaceholder";
+import QuestionOptions from "./templateComponents/questionOptions";
+import TemplateTitle from "./templateComponents/templateTitle";
+import AnswersPlaceholder from "./templateComponents/answerPlaceholder";
 import { QuestionType } from "../../enums/questionTypes";
 import { useAuth } from "../../context/authContext";
 import { v4 as uuidv4 } from "uuid";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import httpClient from "../../axios";
 
 const TemplateForm: React.FC = () => {
   const questionTypes = Object.values(QuestionType);
+  const [skipStorage, setSkipStorage] = useState(false);
   const { activeUser } = useAuth();
 
   const {
@@ -20,6 +22,8 @@ const TemplateForm: React.FC = () => {
     formState: { errors },
     setValue,
     getValues,
+    watch,
+    reset,
   } = useForm<Template>();
 
   const { fields, append, remove } = useFieldArray({
@@ -27,7 +31,24 @@ const TemplateForm: React.FC = () => {
     name: "questions",
   });
 
-  const onSubmit = (data: Template) => {
+  const formData = watch();
+
+  useEffect(() => {
+    const storedTemplate = localStorage.getItem(`templateFormData_${activeUser?.id}`);
+    if (storedTemplate) {
+      reset(JSON.parse(storedTemplate));
+    }
+  }, [reset, activeUser?.id]);
+
+  useEffect(() => {
+    if (!skipStorage) {
+      localStorage.setItem(`templateFormData_${activeUser?.id}`, JSON.stringify(formData));
+    } else {
+      localStorage.removeItem(`templateFormData_${activeUser?.id}`);
+    }
+  }, [formData, activeUser?.id, skipStorage]);
+
+  const onSubmit = async (data: Template) => {
     const templateData = {
       id: uuidv4(),
       title: data.title,
@@ -38,6 +59,19 @@ const TemplateForm: React.FC = () => {
     };
 
     console.log(templateData);
+
+    try {
+      const response = await httpClient.post("/templates", templateData);
+      console.log(response.data);
+      setSkipStorage(true);
+      reset({
+        title: "",
+        description: "",
+        questions: [],
+      });
+    } catch (error: unknown) {
+      console.log(error);
+    }
   };
 
   const updateQuestion = (index: number, updates: Partial<Question>) => {
