@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useFieldArray, useForm } from "react-hook-form";
 import { Question, Template } from "../shared/types";
 import { Link } from "react-router-dom";
@@ -9,10 +10,19 @@ import { useAuth } from "../../context/authContext";
 import { v4 as uuidv4 } from "uuid";
 import React, { useEffect, useState } from "react";
 import httpClient from "../../axios";
+import ImageUploadModal from "./templateComponents/imageUploadModal";
+import TemplateImage from "./templateComponents/templateImage";
+import { base64ToBlob } from "base64-blob";
+import { uploadImageOnCloud } from "../../utils/imageUtils";
+import ToastComponent from "../shared/toast";
 
 const TemplateForm: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [imageSrc, setImageSrc] = useState<string>("");
+  const [templateId, setTemplateId] = useState<string>(uuidv4());
+
   const questionTypes = Object.values(QuestionType);
-  const [skipStorage, setSkipStorage] = useState(false);
   const { activeUser } = useAuth();
 
   const {
@@ -24,7 +34,16 @@ const TemplateForm: React.FC = () => {
     getValues,
     watch,
     reset,
-  } = useForm<Template>();
+  } = useForm<Template>({
+    defaultValues: {
+      id: templateId,
+      title: "",
+      description: "",
+      questions: [],
+      imageUrl: imageSrc,
+      imagePublicId: "",
+    },
+  });
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -35,43 +54,70 @@ const TemplateForm: React.FC = () => {
 
   useEffect(() => {
     const storedTemplate = localStorage.getItem(`templateFormData_${activeUser?.id}`);
+
     if (storedTemplate) {
-      reset(JSON.parse(storedTemplate));
+      const fromStorage = JSON.parse(storedTemplate);
+      reset(fromStorage);
+      setImageSrc(fromStorage.imageUrl);
     }
-  }, [reset, activeUser?.id]);
+  }, []);
 
   useEffect(() => {
-    if (!skipStorage) {
-      localStorage.setItem(`templateFormData_${activeUser?.id}`, JSON.stringify(formData));
-    } else {
-      localStorage.removeItem(`templateFormData_${activeUser?.id}`);
-    }
-  }, [formData, activeUser?.id, skipStorage]);
+    localStorage.setItem(`templateFormData_${activeUser?.id}`, JSON.stringify(formData));
+  }, [formData]);
 
   const onSubmit = async (data: Template) => {
+    setIsLoading(true);
+    const uploadedImageData = await templateImageUpload(imageSrc);
+
+    if (uploadedImageData) {
+      setValue("imagePublicId", uploadedImageData.publicId);
+      setValue("imageUrl", uploadedImageData.imageUrl);
+    } else {
+      console.error("Image upload failed.");
+      return;
+    }
+
     const templateData = {
-      id: uuidv4(),
-      title: data.title,
-      description: data.description,
       userId: activeUser?.id,
       date: new Date(),
+      id: templateId,
+      title: data.title,
+      description: data.description,
       questions: data.questions,
+      imageUrl: uploadedImageData.imageUrl,
+      imagePublicId: uploadedImageData.publicId,
     };
 
-    console.log(templateData);
-
     try {
-      const response = await httpClient.post("/templates", templateData);
-      console.log(response.data);
-      setSkipStorage(true);
-      reset({
-        title: "",
-        description: "",
-        questions: [],
-      });
+      await httpClient.post("/templates", templateData);
+      setIsLoading(false);
+      setShowTooltip(true);
+
+      resetForm();
     } catch (error: unknown) {
       console.log(error);
     }
+  };
+
+  const resetForm = () => {
+    localStorage.removeItem(`templateFormData_${activeUser?.id}`);
+    const newTemplateId = uuidv4();
+    setTemplateId(newTemplateId);
+    setImageSrc("");
+
+    setTimeout(() => {
+      setShowTooltip(false);
+    }, 5000);
+
+    reset({
+      id: newTemplateId,
+      title: "",
+      description: "",
+      questions: [],
+      imageUrl: "",
+      imagePublicId: "",
+    });
   };
 
   const updateQuestion = (index: number, updates: Partial<Question>) => {
@@ -87,9 +133,28 @@ const TemplateForm: React.FC = () => {
     });
   };
 
+  const getTempLateImageData = (templateImage: string | null) => {
+    if (templateImage) {
+      setImageSrc(templateImage);
+      setValue("imageUrl", templateImage);
+    }
+  };
+
+  const templateImageUpload = async (image: string) => {
+    try {
+      const blob = await base64ToBlob(image);
+      const data = await uploadImageOnCloud(blob);
+      return data;
+    } catch (error: unknown) {
+      console.error("Error during image upload:");
+      return null;
+    }
+  };
+
   return (
     <div className="container">
       <form onSubmit={handleSubmit(onSubmit)} className="d-flex flex-column gap-5 mb-5">
+        <TemplateImage imgSrc={imageSrc} />
         <TemplateTitle register={register} errors={errors} />
 
         {fields.map((question, index) => {
@@ -102,10 +167,10 @@ const TemplateForm: React.FC = () => {
 
           return (
             <div key={question.id} className="container border-start border-5 rounded p-3 shadow-sm">
-              <div className="d-flex gap-3 mb-4">
+              <div className="d-flex flex-column flex-lg-row gap-3 mb-4">
                 <input
                   type="text"
-                  className="form-control form-control-sm w-25 custom-border bg-transparent"
+                  className="form-control form-control-sm  custom-border bg-transparent"
                   placeholder="Question title"
                   {...register(`questions.${index}.title`)}
                 />
@@ -117,23 +182,23 @@ const TemplateForm: React.FC = () => {
                 />
               </div>
 
-              <div className="d-flex gap-3 align-items-center flex-column flex-lg-row mb-5">
+              <div className="d-flex gap-3 flex-column flex-lg-row mb-5">
                 <div className="position-relative w-100">
                   <input
                     {...register(`questions.${index}.text`, { required: "Question text is required" })}
                     placeholder="Question text"
-                    className={`form-control bg-transparent ${
+                    className={`form-control form-control-sm bg-transparent ${
                       errors.questions?.[index]?.text ? "is-invalid" : ""
                     }`}
                   />
                   {errors.questions?.[index]?.text && (
-                    <div className="invalid-feedback position-absolute" style={{ bottom: "-1.5rem" }}>
+                    <div className="invalid-feedback position-absolute">
                       {errors.questions[index].text.message}
                     </div>
                   )}
                 </div>
 
-                <div className="dropdown">
+                <div className="dropdown align-self-end">
                   <button
                     id="dropdownMenuButton"
                     className="btn btn-primary dropdown-toggle"
@@ -197,12 +262,20 @@ const TemplateForm: React.FC = () => {
           );
         })}
 
-        <button type="submit" className="btn btn-primary mt-4 align-self-end">
+        <button type="submit" className="btn btn-primary mt-4 align-self-end" disabled={isLoading}>
           Save
+          {isLoading && (
+            <div
+              className="spinner-border text-success ms-2"
+              role="status"
+              style={{ width: "1rem", height: "1rem" }}>
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          )}
         </button>
       </form>
 
-      <div style={{ position: "fixed", bottom: "10%", left: "100px" }}>
+      <div className="d-flex gap-4">
         <i
           title="Add question"
           className="bi bi-plus-circle fs-3"
@@ -217,6 +290,9 @@ const TemplateForm: React.FC = () => {
               options: [],
             })
           }></i>{" "}
+        <i className="bi bi-image fs-3" data-bs-toggle="modal" data-bs-target="#templateImage"></i>
+        <ImageUploadModal modalId="templateImage" onImageUpload={getTempLateImageData} />
+        {showTooltip && <ToastComponent message="Template created successfully" show={showTooltip} />}
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { BrowserRouter, useLocation } from "react-router-dom";
 import AppRoutes from "./routes";
 import { AuthProvider } from "./context/authContext";
 import { ThemeProvider, useTheme } from "./context/themeContext";
+import { CloudinaryProvider } from "./context/cloudinaryContext";
 
 function AppContent() {
   const location = useLocation();
@@ -32,7 +33,9 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <ThemeProvider>
-          <AppContent />
+          <CloudinaryProvider>
+            <AppContent />
+          </CloudinaryProvider>
         </ThemeProvider>
       </AuthProvider>
     </BrowserRouter>

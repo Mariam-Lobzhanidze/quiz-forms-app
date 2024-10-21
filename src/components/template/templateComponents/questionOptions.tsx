@@ -36,9 +36,10 @@ const QuestionOptions: React.FC<QuestionOptionsProps> = ({ register, errors, que
       {fields.map((field, index) => (
         <div className="input-group d-flex flex-column gap-1" key={field.id}>
           <div className="d-flex gap-3 align-items-center">
+            <i className="bi bi-app fs-5"></i>
             <input
               type="text"
-              className={`form-control bg-transparent ${
+              className={`form-control form-control-sm bg-transparent ${
                 errors.questions?.[questionIndex]?.options?.[index] ? "is-invalid" : ""
               }`}
               placeholder="Option"
@@ -49,7 +50,7 @@ const QuestionOptions: React.FC<QuestionOptionsProps> = ({ register, errors, que
             <i className="bi bi-x-lg" onClick={() => remove(index)}></i>
           </div>
           {errors.questions?.[questionIndex]?.options?.[index] && (
-            <div className="invalid-feedback" style={{ display: "block", marginTop: "0.15rem" }}>
+            <div className="invalid-feedback">
               {errors.questions[questionIndex].options[index]?.value?.message}
             </div>
           )}

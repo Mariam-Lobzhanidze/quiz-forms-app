@@ -39,7 +39,6 @@ const TabNavigation: React.FC = () => {
         return (
           <div>
             <h5>Aggregation</h5>
-            {/* Add your aggregation display here */}
           </div>
         );
       default:

@@ -20,3 +20,49 @@
     border-bottom: 1px dotted #999 !important;
   }
 }
+
+.bi-x-lg {
+  cursor: pointer;
+}
+
+.invalid-feedback {
+  display: block;
+  margin-top: 0.15rem;
+}
+
+.image-container {
+  height: 250px;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    height: 160px;
+  }
+  img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.dropzone {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.dropzone:hover {
+  border-color: #0f7f5b;
+}
+
+.dropzone img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

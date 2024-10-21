@@ -27,10 +27,22 @@ export interface Question {
 }
 
 export interface Template {
+  id: string;
   title: string;
   description: string;
-  userId?: number;
+  userId?: string;
   questions: Question[];
+  accessSettings?: "PUBLIC" | "PRIVATE" | string[];
+  likesCount?: number;
+  commentsEnabled?: boolean;
+  topicId?: number;
+  imageUrl: string;
+  imagePublicId: string;
+  date: Date;
+}
+
+export interface templateResponse {
+  data: Template;
 }
 
 export interface User {
