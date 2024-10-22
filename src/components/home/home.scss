@@ -1,0 +1,10 @@
+.fixed-height {
+  height: 140px;
+  overflow: hidden;
+}
+
+.fixed-height img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

@@ -1,23 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useState } from "react";
-import httpClient from "../../axios";
+
 const TemplateForm = React.lazy(() => import("./templateForm"));
 
 const TabNavigation: React.FC = () => {
   const [activeTab, setActiveTab] = useState("template");
-
-  const getAllTemplates = async () => {
-    try {
-      const response = await httpClient.get("/templates");
-      console.log(response.data);
-    } catch (error: unknown) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    getAllTemplates();
-  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
