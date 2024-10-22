@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./template.scss";
-import defaultImage from "./assets/template_default_image.jpg";
+import defaultImage from "../../../assets/template_default_image.jpg";
 interface TemplateImageUploadProps {
   imgSrc: string;
 }
