@@ -34,8 +34,8 @@ const QuestionOptions: React.FC<QuestionOptionsProps> = ({ register, errors, que
   return (
     <div className="mt-2 d-flex flex-column gap-3">
       {fields.map((field, index) => (
-        <div className="input-group d-flex flex-column gap-1" key={field.id}>
-          <div className="d-flex gap-3 align-items-center">
+        <div className="input-group d-flex flex-column gap-1 position-relative mb-3" key={field.id}>
+          <div className="d-flex gap-2 align-items-center">
             <i className="bi bi-app fs-5"></i>
             <input
               type="text"
@@ -50,7 +50,7 @@ const QuestionOptions: React.FC<QuestionOptionsProps> = ({ register, errors, que
             <i className="bi bi-x-lg" onClick={() => remove(index)}></i>
           </div>
           {errors.questions?.[questionIndex]?.options?.[index] && (
-            <div className="invalid-feedback">
+            <div className="invalid-feedback position-absolute" style={{ bottom: "-22px", left: "28px" }}>
               {errors.questions[questionIndex].options[index]?.value?.message}
             </div>
           )}

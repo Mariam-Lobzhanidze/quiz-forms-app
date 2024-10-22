@@ -13,7 +13,7 @@ const TemplateTitle: React.FC<TemplateTitleProps> = ({ register, errors }) => {
         <input
           placeholder="Title"
           type="text"
-          className={`bg-transparent form-control form-control-sm ${errors.title ? "is-invalid" : ""}`}
+          className={`bg-transparent form-control ${errors.title ? "is-invalid" : ""}`}
           id="title"
           {...register("title", { required: "Title is required" })}
         />

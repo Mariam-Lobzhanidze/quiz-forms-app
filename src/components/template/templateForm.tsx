@@ -18,7 +18,7 @@ import ToastComponent from "../shared/toast";
 
 const TemplateForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const [imageSrc, setImageSrc] = useState<string>("");
   const [templateId, setTemplateId] = useState<string>(uuidv4());
 
@@ -92,7 +92,7 @@ const TemplateForm: React.FC = () => {
     try {
       await httpClient.post("/templates", templateData);
       setIsLoading(false);
-      setShowTooltip(true);
+      setShowToast(true);
 
       resetForm();
     } catch (error: unknown) {
@@ -102,12 +102,13 @@ const TemplateForm: React.FC = () => {
 
   const resetForm = () => {
     localStorage.removeItem(`templateFormData_${activeUser?.id}`);
-    const newTemplateId = uuidv4();
-    setTemplateId(newTemplateId);
     setImageSrc("");
 
+    const newTemplateId = uuidv4();
+    setTemplateId(newTemplateId);
+
     setTimeout(() => {
-      setShowTooltip(false);
+      setShowToast(false);
     }, 5000);
 
     reset({
@@ -155,6 +156,29 @@ const TemplateForm: React.FC = () => {
     <div className="container">
       <form onSubmit={handleSubmit(onSubmit)} className="d-flex flex-column gap-5 mb-5">
         <TemplateImage imgSrc={imageSrc} />
+        <div className="z-3 d-flex gap-3 bg-light shadow-sm p-3 border-start border-5 rounded position-sticky top-30 start-0 controls">
+          <i
+            title="Add question"
+            className="bi bi-plus-circle fs-3"
+            onClick={() =>
+              append({
+                title: "",
+                description: "",
+                id: uuidv4(),
+                type: "Checkboxes",
+                state: "PRESENT_REQUIRED",
+                text: "",
+                options: [],
+              })
+            }></i>{" "}
+          <i
+            className="bi bi-image fs-3"
+            title="Add image"
+            data-bs-toggle="modal"
+            data-bs-target="#templateImage"></i>
+          <ImageUploadModal modalId="templateImage" onImageUpload={getTempLateImageData} />
+          {showToast && <ToastComponent message="Template created successfully" show={showToast} />}
+        </div>
         <TemplateTitle register={register} errors={errors} />
 
         {fields.map((question, index) => {
@@ -182,12 +206,12 @@ const TemplateForm: React.FC = () => {
                 />
               </div>
 
-              <div className="d-flex gap-3 flex-column flex-lg-row mb-5">
+              <div className="d-flex gap-3 flex-column align-items-center flex-lg-row mb-5">
                 <div className="position-relative w-100">
                   <input
                     {...register(`questions.${index}.text`, { required: "Question text is required" })}
                     placeholder="Question text"
-                    className={`form-control form-control-sm bg-transparent ${
+                    className={`form-control bg-transparent ${
                       errors.questions?.[index]?.text ? "is-invalid" : ""
                     }`}
                   />
@@ -274,26 +298,6 @@ const TemplateForm: React.FC = () => {
           )}
         </button>
       </form>
-
-      <div className="d-flex gap-4">
-        <i
-          title="Add question"
-          className="bi bi-plus-circle fs-3"
-          onClick={() =>
-            append({
-              title: "",
-              description: "",
-              id: uuidv4(),
-              type: "Checkboxes",
-              state: "PRESENT_REQUIRED",
-              text: "",
-              options: [],
-            })
-          }></i>{" "}
-        <i className="bi bi-image fs-3" data-bs-toggle="modal" data-bs-target="#templateImage"></i>
-        <ImageUploadModal modalId="templateImage" onImageUpload={getTempLateImageData} />
-        {showTooltip && <ToastComponent message="Template created successfully" show={showTooltip} />}
-      </div>
     </div>
   );
 };

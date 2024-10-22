@@ -21,8 +21,17 @@
   }
 }
 
-.bi-x-lg {
+.bi {
   cursor: pointer;
+}
+
+.bi-plus-circle,
+.bi-image {
+  color: var(--bs-primary);
+}
+
+.controls {
+  width: fit-content;
 }
 
 .invalid-feedback {

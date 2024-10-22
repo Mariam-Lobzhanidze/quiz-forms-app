@@ -1,3 +1,11 @@
+$position-values: (
+  0: 0,
+  30: 30px,
+  50: 50%,
+  100: 100%,
+);
+
+@import "bootstrap";
 :root,
 [data-bs-theme="light"] {
   --bs-body-bg: #e9e7e8;
@@ -14,6 +22,7 @@
   --bs-danger: #f07b61;
 
   --bs-border-color: #3ba27e;
+
   --bs-success: #21af98;
 
   --text-color: #333;
@@ -70,6 +79,10 @@
     }
   }
 
+  .form-control[type="search"] {
+    color: var(--text-color);
+  }
+
   .form-check-input {
     border-color: var(--bs-primary);
     background-color: #fff;
@@ -102,7 +115,7 @@
   }
 }
 
-:root,
+// :root,
 [data-bs-theme="dark"] {
   --bs-link-color: #fff;
   --bs-secondary-rgb: #212529;
