@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./template.scss";
-
+import defaultImage from "./assets/template_default_image.jpg";
 interface TemplateImageUploadProps {
   imgSrc: string;
 }
 
 const TemplateImage: React.FC<TemplateImageUploadProps> = ({ imgSrc }) => {
-  const defaultImage = "src/assets/template_default_image.jpg";
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentSrc, setCurrentSrc] = useState<string>(defaultImage);
 
