@@ -198,11 +198,6 @@ const TemplateForm: React.FC = () => {
   };
 
   const handleAddQuestion = () => {
-    if (!templateToUpdate) {
-      console.error("Cannot add question; template is undefined.");
-      return;
-    }
-
     append({
       title: "",
       description: "",
