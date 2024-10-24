@@ -14,24 +14,4 @@ httpClient.interceptors.request.use((config) => {
   return config;
 });
 
-// httpClient.interceptors.response.use(
-//   (response) => {
-//     return response;
-//   },
-//   (error) => {
-//     if (error.response && error.response.status === 401) {
-//       const message = error.response.data.message;
-
-//       if (message === "Token has expired. Please log in again.") {
-//         localStorage.removeItem("token");
-//         localStorage.removeItem("activeUserId");
-//         window.location.href = "/login";
-//       } else {
-//         console.error(message);
-//       }
-//     }
-//     return Promise.reject(error);
-//   }
-// );
-
 export default httpClient;

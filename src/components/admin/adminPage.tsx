@@ -4,7 +4,7 @@ import { User, UsersData } from "../shared/types";
 import httpClient from "../../axios";
 import { useAuth } from "../../context/authContext";
 import { useNavigate } from "react-router-dom";
-import Pagination from "./pagination";
+import Pagination from "../shared/pagination";
 
 const AdminPage: React.FC = () => {
   const navigate = useNavigate();

@@ -1,15 +1,15 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../../context/authContext";
 import Dropdown from "./dropdown";
 import { ThemeSwitcher } from "../shared/themeSwitcher";
 import LanguageSwitcher from "../shared/languageSwitcher";
+import profileImage from "../../assets/profile_default.jpg";
 
 const MobileNav: React.FC = () => {
   const { isLoggedIn, handleLogout, activeUser } = useAuth();
 
   const dropdownItems = [
     { label: "AdminPage", href: "/adminPage", visible: activeUser?.role === "admin" },
-    { label: "Settings", href: "/settings" },
     { label: "Sign out", onClick: handleLogout },
   ];
 
@@ -17,7 +17,9 @@ const MobileNav: React.FC = () => {
     <div className="offcanvas offcanvas-start" tabIndex={-1} id="offcanvas">
       <div className="offcanvas-header">
         <h5 className="offcanvas-title" id="offcanvasLabel">
-          Forms App
+          <Link to="/" className="me-4 navbar-brand fs-5 fw-bold navbar-brand">
+            Forms App
+          </Link>
         </h5>
         <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
@@ -26,28 +28,12 @@ const MobileNav: React.FC = () => {
         <hr />
         <ul className="nav nav-pills flex-column mb-auto gap-3">
           <li className="nav-item">
-            <Link to="#" className="nav-link active" aria-current="page">
-              <svg className="bi pe-none me-2" width="16" height="16">
-                <use href="#home"></use>
-              </svg>
-              Home
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="#" className="nav-link" aria-current="page">
-              <svg className="bi pe-none me-2" width="16" height="16">
-                <use href="#home"></use>
-              </svg>
-              Forms
-            </Link>
-          </li>
-          <li>
-            <Link to="#" className="nav-link">
-              <svg className="bi pe-none me-2" width="16" height="16">
-                <use href="#speedometer2"></use>
-              </svg>
-              Dashboard
-            </Link>
+            <NavLink
+              key={activeUser?.id}
+              to={`/users/${activeUser?.id}/templates`}
+              className={({ isActive }) => `nav-link px-2 ${isActive ? "active" : ""}`}>
+              Templates table
+            </NavLink>
           </li>
         </ul>
 
@@ -64,7 +50,7 @@ const MobileNav: React.FC = () => {
           </div>
         ) : (
           <div className="d-flex align-items-center justify-content-between">
-            <Dropdown profileImage="https://github.com/mdo.png" items={dropdownItems} />
+            <Dropdown profileImage={profileImage} items={dropdownItems} />
 
             <ThemeSwitcher />
             <LanguageSwitcher />

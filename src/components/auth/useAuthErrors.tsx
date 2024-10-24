@@ -1,4 +1,3 @@
-// hooks/useAuthErrors.ts
 import { UseFormSetError } from "react-hook-form";
 import axios from "axios";
 import { LoginForm, RegistrationForm } from "../shared/types";

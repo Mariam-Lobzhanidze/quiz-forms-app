@@ -10,19 +10,8 @@ const Footer: React.FC = () => {
           </Link>
         </li>
         <li className="nav-item">
-          <Link to="#" className="nav-link px-2">
-            Features
-          </Link>
-        </li>
-        <li className="nav-item">
-          <Link to="#" className="nav-link px-2">
-            Pricing
-          </Link>
-        </li>
-
-        <li className="nav-item">
-          <Link to="#" className="nav-link px-2">
-            About
+          <Link to="/tabs" className="nav-link px-2">
+            Templates table
           </Link>
         </li>
       </ul>

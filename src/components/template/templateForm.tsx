@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useFieldArray, useForm } from "react-hook-form";
 import { Question, Template } from "../shared/types";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import QuestionOptions from "./templateComponents/questionOptions";
 import TemplateTitle from "./templateComponents/templateTitle";
 import AnswersPlaceholder from "./templateComponents/answerPlaceholder";
@@ -17,8 +17,13 @@ import { uploadImageOnCloud } from "../../utils/imageUtils";
 import ToastComponent from "../shared/toast";
 
 const TemplateForm: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const [templateToUpdate, setTemplateToUpdate] = useState<Template>();
+
   const [isLoading, setIsLoading] = useState(false);
+  const [imageIsUpdating, setImageIsUpdating] = useState(false);
   const [showToast, setShowToast] = useState(false);
+
   const [imageSrc, setImageSrc] = useState<string>("");
   const [templateId, setTemplateId] = useState<string>(uuidv4());
 
@@ -52,7 +57,19 @@ const TemplateForm: React.FC = () => {
 
   const formData = watch();
 
+  const clearTemplatesData = () => {
+    localStorage.removeItem(`templateFormData_${activeUser?.id}`);
+  };
+
+  const getTemplateToUpdate = async () => {
+    if (id) {
+      const response = await httpClient.get(`/templates/${id}`);
+      setTemplateToUpdate(response.data);
+    }
+  };
+
   useEffect(() => {
+    getTemplateToUpdate();
     const storedTemplate = localStorage.getItem(`templateFormData_${activeUser?.id}`);
 
     if (storedTemplate) {
@@ -60,28 +77,50 @@ const TemplateForm: React.FC = () => {
       reset(fromStorage);
       setImageSrc(fromStorage.imageUrl);
     }
-  }, []);
+
+    return () => {
+      clearTemplatesData();
+    };
+  }, [activeUser?.id, reset]);
 
   useEffect(() => {
     localStorage.setItem(`templateFormData_${activeUser?.id}`, JSON.stringify(formData));
-  }, [formData]);
+  }, [formData, activeUser?.id]);
+
+  useEffect(() => {
+    if (templateToUpdate) {
+      reset(templateToUpdate);
+      setImageSrc(templateToUpdate.imageUrl);
+    }
+  }, [templateToUpdate]);
 
   const onSubmit = async (data: Template) => {
+    console.log(templateToUpdate);
     setIsLoading(true);
-    const uploadedImageData = await templateImageUpload(imageSrc);
+    let uploadedImageData;
+
+    if (imageIsUpdating) {
+      uploadedImageData = await templateImageUpload(imageSrc);
+    } else {
+      uploadedImageData = {
+        imageUrl: data.imageUrl,
+        publicId: data.imagePublicId,
+      };
+    }
 
     if (uploadedImageData) {
       setValue("imagePublicId", uploadedImageData.publicId);
       setValue("imageUrl", uploadedImageData.imageUrl);
     } else {
       console.error("Image upload failed.");
+      setIsLoading(false);
       return;
     }
 
     const templateData = {
       userId: activeUser?.id,
-      date: new Date(),
-      id: templateId,
+      createdAt: templateToUpdate ? templateToUpdate.createdAt : new Date(),
+      id: templateToUpdate ? templateToUpdate.id : templateId,
       title: data.title,
       description: data.description,
       questions: data.questions,
@@ -90,19 +129,24 @@ const TemplateForm: React.FC = () => {
     };
 
     try {
-      await httpClient.post("/templates", templateData);
-      setIsLoading(false);
-      setShowToast(true);
+      const request = templateToUpdate
+        ? httpClient.put(`/templates/${templateToUpdate.id}`, templateData)
+        : httpClient.post("/templates", templateData);
 
+      await request;
+      setShowToast(true);
       resetForm();
-    } catch (error: unknown) {
-      console.log(error);
+    } catch (error) {
+      console.error("Failed to save template data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const resetForm = () => {
-    localStorage.removeItem(`templateFormData_${activeUser?.id}`);
+    clearTemplatesData();
     setImageSrc("");
+    setImageIsUpdating(false);
 
     const newTemplateId = uuidv4();
     setTemplateId(newTemplateId);
@@ -135,6 +179,7 @@ const TemplateForm: React.FC = () => {
   };
 
   const getTempLateImageData = (templateImage: string | null) => {
+    setImageIsUpdating(!!templateImage);
     if (templateImage) {
       setImageSrc(templateImage);
       setValue("imageUrl", templateImage);
@@ -152,32 +197,36 @@ const TemplateForm: React.FC = () => {
     }
   };
 
+  const handleAddQuestion = () => {
+    if (!templateToUpdate) {
+      console.error("Cannot add question; template is undefined.");
+      return;
+    }
+
+    append({
+      title: "",
+      description: "",
+      id: uuidv4(),
+      type: "Checkboxes",
+      state: "PRESENT_REQUIRED",
+      text: "",
+      options: [],
+    });
+  };
+
   return (
     <div className="container">
       <form onSubmit={handleSubmit(onSubmit)} className="d-flex flex-column gap-5 mb-5">
         <TemplateImage imgSrc={imageSrc} />
         <div className="z-3 d-flex gap-3 bg-light shadow-sm p-3 border-start border-5 rounded position-sticky top-30 start-0 controls">
-          <i
-            title="Add question"
-            className="bi bi-plus-circle fs-3"
-            onClick={() =>
-              append({
-                title: "",
-                description: "",
-                id: uuidv4(),
-                type: "Checkboxes",
-                state: "PRESENT_REQUIRED",
-                text: "",
-                options: [],
-              })
-            }></i>{" "}
+          <i title="Add question" className="bi bi-plus-circle fs-3" onClick={handleAddQuestion}></i>{" "}
           <i
             className="bi bi-image fs-3"
             title="Add image"
             data-bs-toggle="modal"
             data-bs-target="#templateImage"></i>
           <ImageUploadModal modalId="templateImage" onImageUpload={getTempLateImageData} />
-          {showToast && <ToastComponent message="Template created successfully" show={showToast} />}
+          {showToast && <ToastComponent message="Template saved successfully" show={showToast} />}
         </div>
         <TemplateTitle register={register} errors={errors} />
 

@@ -6,13 +6,13 @@ import Dropdown from "./dropdown";
 import { ThemeSwitcher } from "../shared/themeSwitcher";
 import Search from "../shared/search";
 import LanguageSwitcher from "../shared/languageSwitcher";
+import profileImage from "../../assets/profile_default.jpg";
 
 const Header: React.FC = () => {
   const { isLoggedIn, handleLogout, activeUser } = useAuth();
 
   const dropdownItems = [
     { label: "AdminPage", href: "/adminPage", visible: activeUser?.role === "admin" },
-    { label: "Settings", href: "/settings" },
     { label: "Sign out", onClick: handleLogout },
   ];
 
@@ -25,13 +25,8 @@ const Header: React.FC = () => {
           </Link>
           <ul className="nav d-none d-lg-flex gap-1 align-items-center">
             <li>
-              <Link to="#" className="nav-link px-2">
-                form
-              </Link>
-            </li>
-            <li>
-              <Link to="/tabs" className="nav-link px-2">
-                Template form
+              <Link key={activeUser?.id} to={`/users/${activeUser?.id}/templates`} className="nav-link px-2">
+                Templates table
               </Link>
             </li>
           </ul>
@@ -58,7 +53,7 @@ const Header: React.FC = () => {
               </Link>
             </div>
           ) : (
-            <Dropdown profileImage="https://github.com/mdo.png" items={dropdownItems} />
+            <Dropdown profileImage={profileImage} items={dropdownItems} />
           )}
         </div>
       </div>

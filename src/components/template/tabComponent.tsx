@@ -23,11 +23,6 @@ const TabNavigation: React.FC = () => {
           </div>
         );
 
-        return (
-          <div>
-            <h5>Aggregation</h5>
-          </div>
-        );
       default:
         return <div>Select a tab to see content.</div>;
     }

@@ -38,7 +38,6 @@ export interface Template {
   topicId?: number;
   imageUrl: string;
   imagePublicId: string;
-  // date: Date;
   createdAt: string;
 }
 

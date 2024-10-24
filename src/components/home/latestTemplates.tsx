@@ -13,7 +13,6 @@ const LatestTemplates: React.FC = () => {
       const response = await httpClient.get("/templates");
       const latestTemplates = getLatestTemplates(response.data.templates);
       setCards(latestTemplates);
-      console.log(latestTemplates);
     } catch (error: unknown) {
       console.log(error);
     }

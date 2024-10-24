@@ -1,6 +1,7 @@
 import React, { Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./protectedRoutes";
+import TemplatesTable from "./components/template/templateTable";
 
 const Home = React.lazy(() => import("./components/home/homePage"));
 const Login = React.lazy(() => import("./components/auth/login"));
@@ -17,8 +18,10 @@ const publicRoutes = [
 ];
 
 const protectedRoutes = [
-  { path: "/tabs", element: <TabNavigation />, provider: true },
-  { path: "/adminPage", element: <AdminPage />, provider: false },
+  { path: "/tabs", element: <TabNavigation /> },
+  { path: "/tabs/:id", element: <TabNavigation /> },
+  { path: `/users/:id/templates`, element: <TemplatesTable /> },
+  { path: "/adminPage", element: <AdminPage /> },
 ];
 
 const AppRoutes: React.FC = () => {
