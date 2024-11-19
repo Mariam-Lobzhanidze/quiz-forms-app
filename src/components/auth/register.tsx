@@ -23,7 +23,7 @@ const Register: React.FC = () => {
   const onSubmit: SubmitHandler<RegistrationForm> = async (data) => {
     try {
       const { confirmPassword, ...dataForRegister } = data;
-      const response = await httpClient.post("/register", dataForRegister);
+      await httpClient.post("/register", dataForRegister);
 
       navigate("/login");
     } catch (error) {
