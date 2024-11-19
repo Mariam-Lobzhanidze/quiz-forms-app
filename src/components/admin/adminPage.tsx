@@ -19,7 +19,7 @@ const AdminPage: React.FC = () => {
   const getUsers = async (page = 1, limit = 10) => {
     try {
       const response = await httpClient.get<UsersData>(`/users?page=${page}&limit=${limit}`);
-      console.log(response);
+
       setUsers(response.data.users);
 
       setTotalPages(Math.ceil(response.data.totalUsers / limit));

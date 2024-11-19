@@ -24,7 +24,7 @@ const Register: React.FC = () => {
     try {
       const { confirmPassword, ...dataForRegister } = data;
       const response = await httpClient.post("/register", dataForRegister);
-      console.log(response);
+
       navigate("/login");
     } catch (error) {
       handleAuthError(error);
