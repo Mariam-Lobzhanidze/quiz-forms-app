@@ -2,8 +2,8 @@ import React, { Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./protectedRoutes";
 import TemplatesTable from "./components/template/templateTable";
+import Home from "./components/home/homePage";
 
-const Home = React.lazy(() => import("./components/home/homePage"));
 const Login = React.lazy(() => import("./components/auth/login"));
 const Register = React.lazy(() => import("./components/auth/register"));
 
